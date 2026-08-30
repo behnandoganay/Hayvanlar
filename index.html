@@ -682,31 +682,53 @@
   function cal(id) {
     durdur();   // cocuk butonlara ust uste bassin diye: her zaman tek ses
 
-    var kayit = kayitlar[id];
-    if (kayit) {
-      try {
-        kayit.currentTime = 0;
-        aktifKayit = kayit;
-        var soz = kayit.play();
-        if (soz && soz.catch) {
-          soz.catch(function () {
-            // Kayit calinamadi: bu hayvani kalici olarak sentez'e dondur
-            kayitlar[id] = null;
-            if (aktifKayit === kayit) aktifKayit = null;
-            sentezCal(id);
-          });
-        }
-        return;
-      } catch (e) {
-        kayitlar[id] = null;
-      }
+    /* Kaydi, "yuklendi" damgasini almamis olsa bile deniyoruz. iOS/Safari
+       veri tasarrufu icin on yuklemeyi atlar ve loadedmetadata hic gelmez;
+       yalnizca damgaya bakarsak o cihazlarda kayitlar hic calmaz, hep sentez
+       duyulur. Dokunus bir kullanici hareketidir — medyanin acilabilecegi tam
+       an odur, o yuzden burada dogrudan deniyoruz.                          */
+    if (!bulunamadi[id]) {
+      var kayit = kayitlar[id] || yoklananlar[id];
+      if (kayit) { kayitCal(id, kayit); return; }
     }
     sentezCal(id);
+  }
+
+  function kayitCal(id, kayit) {
+    var karar = false;                 // ayni dokunusta iki ses cikmasin
+    function senteze() {
+      if (karar) return;
+      karar = true;
+      /* Araya baska bir hayvan girdiyse karisma. Cocuk pes pese bastiginda
+         durdurulan kaydin play() sozu iptalle reddediliyor; bu kontrol
+         olmazsa o red, yeni sesin ustune eski hayvanin sentezini biniyor. */
+      if (aktifKayit !== kayit) return;
+      try { kayit.pause(); } catch (e) {}
+      aktifKayit = null;
+      sentezCal(id);
+    }
+    try { kayit.currentTime = 0; } catch (e) { /* readyState 0 iken atabilir */ }
+    aktifKayit = kayit;
+    var soz;
+    try { soz = kayit.play(); } catch (e) { senteze(); return; }
+    if (soz && soz.then) soz.then(function () { karar = true; }, senteze);
+    // Soz hic sonuclanmazsa diye emniyet: kisa surede calmiyorsa senteze don
+    setTimeout(function () { if (!karar && aktifKayit === kayit && kayit.paused) senteze(); }, 300);
   }
 
   function sentezCal(id) {
     var c = sesMotoru();
     if (!c || !SENTEZ[id]) return;
+    /* Motor uyanincaya kadar bekle. Beklemeden plan yapilirsa ilk dokunusta
+       ses saati henuz islemedigi icin planlanan ses dusuyor ve hic duyulmuyor. */
+    if (c.state === 'suspended' && c.resume) {
+      c.resume().then(function () { sentezBaslat(c, id); }, function () {});
+    } else {
+      sentezBaslat(c, id);
+    }
+  }
+
+  function sentezBaslat(c, id) {
     var cikis = c.createGain();
     cikis.gain.setValueAtTime(1, c.currentTime);
     cikis.connect(c.destination);
@@ -730,6 +752,7 @@
      sonuclanmiyor; oyle yapinca dosyasi olmayan hayvanlar tamamen susuyor.  */
   var KAYIT_BICIMLERI = ['mp3', 'm4a', 'ogg', 'wav'];
   var yoklananlar = {};      // id -> su an denenen <audio> (bitince null)
+  var bulunamadi = {};       // id -> hicbir bicim yuklenemedi, kalici olarak sentez
 
   /* Sesler sayfanin icine gomulu gelebilir (tek dosyalik yayin surumu icin).
      Yerel kullanimda GOMULU_SESLER tanimsizdir ve hicbir sey degismez.     */
@@ -743,10 +766,12 @@
       g.addEventListener('loadedmetadata', function () {
         kayitlar[id] = g; yoklananlar[id] = null;
       }, { once: true });
-      g.addEventListener('error', function () { yoklananlar[id] = null; }, { once: true });
+      g.addEventListener('error', function () {
+        yoklananlar[id] = null; bulunamadi[id] = true;
+      }, { once: true });
       return;
     }
-    if (sira >= KAYIT_BICIMLERI.length) { yoklananlar[id] = null; return; }
+    if (sira >= KAYIT_BICIMLERI.length) { yoklananlar[id] = null; bulunamadi[id] = true; return; }
     var a = new Audio('sesler/' + id + '.' + KAYIT_BICIMLERI[sira]);
     a.preload = 'auto';
     yoklananlar[id] = a;
@@ -761,13 +786,31 @@
     idler.forEach(function (id) { kayitYokla(id, 0); });
   }
 
-  /* iOS/Safari veri tasarrufu icin on yuklemeyi cogu zaman atlar; dosya var
-     olsa bile 'loadedmetadata' gelmeyebilir. Ilk dokunus bir kullanici
-     hareketidir, yoklamayi orada tekrar baslatiyoruz.                     */
-  function kayitlariUyandir() {
+  /* Ilk dokunusta kalan sesleri ac. iOS/Safari medyayi ancak bir kullanici
+     hareketi icinde yuklemeye basliyor; her ses ogesini sessize alip kisaca
+     baslatip durdurmak o kilidi aciyor, sonraki dokunuslar aninda caliyor.
+
+     Bu YALNIZCA BIR KEZ calisir. Onceki surumde her dokunusta load() cagriliyordu;
+     load() devam eden yuklemeyi iptal edip bastan basladigi icin her dokunus bir
+     oncekini bozuyor, kayitlar hicbir zaman tamamlanmiyordu.                 */
+  var ilkDokunusYapildi = false;
+
+  function ilkDokunusHazirligi(atla) {
+    if (ilkDokunusYapildi) return;
+    ilkDokunusYapildi = true;
     Object.keys(yoklananlar).forEach(function (id) {
       var a = yoklananlar[id];
-      if (a) { try { a.load(); } catch (e) {} }
+      if (!a || id === atla) return;        // dokunulan hayvan zaten caliyor
+      try {
+        a.muted = true;
+        var soz = a.play();
+        var kapat = function () {
+          try { a.pause(); a.currentTime = 0; } catch (e) {}
+          a.muted = false;
+        };
+        if (soz && soz.then) soz.then(kapat, function () { a.muted = false; });
+        else kapat();
+      } catch (e) { a.muted = false; }
     });
   }
 
@@ -819,8 +862,8 @@
 
     function dokun(e) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
-      kayitlariUyandir();
-      cal(id);
+      cal(id);                       // once dokunulan hayvan calsin
+      ilkDokunusHazirligi(id);       // sonra kalan sesleri ac (yalnizca ilk kez)
       canlandir(kart);
     }
 
@@ -839,6 +882,7 @@
   // Testlerin erisebilmesi icin
   window.HAYVAN_SESLERI = SENTEZ;      // sentez receteleri
   window.HAYVAN_KAYITLARI = kayitlar;  // gercek kayit elemanlari (varsa)
+  window.HAYVAN_YOKLANANLAR = yoklananlar;
 })();
 </script>
 
