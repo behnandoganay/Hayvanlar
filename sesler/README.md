@@ -1,50 +1,39 @@
-# Gerçek hayvan seslerini buraya koyun
+# Hayvan sesleri
 
-Dosyaları **tam olarak bu adlarla** bu klasöre (`sesler/`) koymanız yeterli.
-Başka hiçbir şey yapmanıza gerek yok — uygulama açılışta bakıyor ve buluyor.
+Sekiz hayvanın gerçek ses kaydı bu klasörde hazır — uygulama açıldığında
+bunları bulup çalıyor. Bir şey yapmanıza gerek yok.
 
-| Hayvan  | Dosya adı     | Aranacak İngilizce terim |
-|---------|---------------|--------------------------|
-| İnek    | `inek.mp3`    | cow moo                  |
-| Koyun   | `koyun.mp3`   | sheep baa / sheep bleat  |
-| Keçi    | `keci.mp3`    | goat bleat               |
-| Köpek   | `kopek.mp3`   | dog bark                 |
-| Kedi    | `kedi.mp3`    | cat meow                 |
-| Ördek   | `ordek.mp3`   | duck quack               |
-| Kurbağa | `kurbaga.mp3` | frog croak               |
-| At      | `at.mp3`      | horse neigh              |
+`inek.mp3` · `koyun.mp3` · `keci.mp3` · `kopek.mp3` · `kedi.mp3` · `ordek.mp3` ·
+`kurbaga.mp3` · `at.mp3`
 
-**Dosya adlarında Türkçe harf yok** — `ö, ç, ğ, ı` yerine `o, c, g, i` yazın.
-Bazı sunucular Türkçe karakterli adlarda sorun çıkarıyor.
+Seslerin nereden geldiği ve nasıl hazırlandığı: [`KAYNAKLAR.md`](KAYNAKLAR.md)
 
-**Hepsini birden koymak zorunda değilsiniz.** Sadece `inek.mp3` koyarsanız
-yalnızca inek gerçek sesle çalar, kalanlar üretilen sesle devam eder.
+## Bir sesi değiştirmek isterseniz
 
-**mp3 şart değil.** `m4a`, `ogg` ve `wav` de çalışır — indirdiğiniz dosya
-hangi biçimdeyse uzantısını değiştirmeden koyun (`inek.wav` gibi).
-Uygulama sırayla mp3 → m4a → ogg → wav diye bakıyor.
+Beğenmediğiniz sesin dosyasını silip yerine yenisini **aynı adla** koyun.
+Dosya adlarında Türkçe harf kullanmayın (`köpek.mp3` değil `kopek.mp3`).
 
-## Nereden bulunur
+`mp3` şart değil; `m4a`, `ogg` ve `wav` de çalışır. Uygulama sırayla
+mp3 → m4a → ogg → wav diye bakar, ilk bulduğunu kullanır. Yani `kedi.mp3`'ü
+silip `kedi.wav` koyabilirsiniz.
 
-> Bu adresleri size önerirken internete bakamadım, o yüzden indirmeden önce
-> sayfadaki lisans bilgisini kendiniz görün.
+Bir dosyayı silip yerine yenisini koymazsanız o hayvan, uygulamanın kendi
+ürettiği yedek sese döner — sessiz kalmaz.
 
-- **Pixabay** — `pixabay.com/sound-effects/` — üyelik istemez, doğrudan mp3
-  indirtir, kaynak belirtme zorunluluğu yoktur. Başlamak için en kolayı.
-- **Freesound** — `freesound.org` — çok geniş arşiv, ücretsiz üyelik ister.
-  Filtrelerden **CC0** seçerseniz hiçbir koşulu olmayan sesleri görürsünüz.
-- **Wikimedia Commons** — `commons.wikimedia.org` — kamuya açık kayıtlar;
-  çoğu `ogg` veya `wav` biçiminde, ikisi de doğrudan çalışıyor.
-- **BBC Sound Effects** — `sound-effects.bbcrewind.co.uk` — kişisel kullanım
-  için ücretsiz, `wav` indirir.
+### Yeni ses seçerken
 
-## Seçerken nelere dikkat edin
+- **1–2 saniye** ideal. Uzun kayıtta çocuk bir sonraki hayvana geçmek için bekliyor.
+- **Baştaki sessizliği kırpın.** En sık yapılan hata bu: dosyanın başında yarım saniye
+  sessizlik varsa çocuk dokunuyor, ses hemen gelmiyor, uygulama bozuk sanılıyor.
+- **Diğerleriyle aynı gürlükte olsun**, yoksa tek başına bağırır.
+- **Tek hayvan olsun** — arka planda çiftlik gürültüsü, müzik veya insan sesi olmasın.
 
-- **Kısa olsun** — 1–2 saniye ideal. Uzun kayıtta çocuk bir sonraki hayvana
-  geçmek için beklemek zorunda kalıyor.
-- **Baştaki sessizliği kırpın.** En sık yapılan hata bu: dosyanın başında
-  yarım saniye sessizlik varsa çocuk dokunuyor, hemen ses gelmiyor ve
-  uygulama bozuk sanılıyor. Ses dosyanın ilk anında başlamalı.
-- **Ses seviyeleri birbirine yakın olsun**, biri diğerinden çok gür olmasın.
-- **Tek hayvan olsun** — arka planda çiftlik gürültüsü, müzik veya insan
-  sesi olan kayıtları seçmeyin.
+### Nereden bulunur
+
+- **Pixabay** — `pixabay.com/sound-effects/` — üyelik istemez, doğrudan mp3 indirtir.
+- **Freesound** — `freesound.org` — ücretsiz üyelik ister; filtreden **CC0** seçin.
+- **Wikimedia Commons** — `commons.wikimedia.org` — kamuya açık, çoğu `ogg`/`wav`.
+- **BBC Sound Effects** — `sound-effects.bbcrewind.co.uk` — kişisel kullanım için ücretsiz.
+
+Arama terimleri İngilizce daha iyi sonuç veriyor: `cow moo`, `sheep bleat`, `goat bleat`,
+`dog bark`, `cat meow`, `duck quack`, `frog croak`, `horse neigh`.

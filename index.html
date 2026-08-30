@@ -731,7 +731,21 @@
   var KAYIT_BICIMLERI = ['mp3', 'm4a', 'ogg', 'wav'];
   var yoklananlar = {};      // id -> su an denenen <audio> (bitince null)
 
+  /* Sesler sayfanin icine gomulu gelebilir (tek dosyalik yayin surumu icin).
+     Yerel kullanimda GOMULU_SESLER tanimsizdir ve hicbir sey degismez.     */
+  var GOMULU = window.GOMULU_SESLER || {};
+
   function kayitYokla(id, sira) {
+    if (GOMULU[id]) {                  // gomulu ses var: bicim yoklamaya gerek yok
+      var g = new Audio(GOMULU[id]);
+      g.preload = 'auto';
+      yoklananlar[id] = g;
+      g.addEventListener('loadedmetadata', function () {
+        kayitlar[id] = g; yoklananlar[id] = null;
+      }, { once: true });
+      g.addEventListener('error', function () { yoklananlar[id] = null; }, { once: true });
+      return;
+    }
     if (sira >= KAYIT_BICIMLERI.length) { yoklananlar[id] = null; return; }
     var a = new Audio('sesler/' + id + '.' + KAYIT_BICIMLERI[sira]);
     a.preload = 'auto';
