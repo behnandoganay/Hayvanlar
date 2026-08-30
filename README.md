@@ -27,23 +27,20 @@ Birkaç dakika sonra çocuğunuza verebileceğiniz bir adres oluşur.
 
 ## Sesler
 
-**Gerçek hayvan sesi eklemek için:** mp3 dosyalarını `sesler/` klasörüne
-`inek.mp3`, `koyun.mp3`, `keci.mp3`, `kopek.mp3`, `kedi.mp3`, `ordek.mp3`,
-`kurbaga.mp3`, `at.mp3` adlarıyla koyun. Başka bir şey yapmanız gerekmiyor.
-Nereden bulacağınız ve nelere dikkat edeceğiniz:
-[`sesler/README.md`](sesler/README.md)
+Sekiz hayvanın **gerçek ses kaydı** uygulamayla birlikte geliyor (`sesler/` klasörü) —
+ayrıca bir şey indirmenize gerek yok. Kayıtların nereden geldiği ve nasıl hazırlandığı:
+[`sesler/KAYNAKLAR.md`](sesler/KAYNAKLAR.md)
 
-Klasör boşsa uygulama sesleri tarayıcıda **Web Audio** ile kendisi üretir.
-Bu sayede hiçbir şey indirmeden ve internetsiz de çalışır — ama üretilen sesler
-çizgi film tarzıdır, gerçek hayvan kaydının yerini tutmaz.
+Kayıtlar olduğu gibi kullanılmadı; çocuk için elden geçirildi: baştaki sessizlikler
+kırpıldı (dokununca ses anında gelsin diye), 8 saniyelik kurbağa kaydı üç vıraklamaya
+indirildi, ve aralarındaki 7.5 katlık gürlük farkı eşitlendi.
 
-İkisi hayvan bazında karışabilir: `inek.mp3` koyup diğerlerini koymazsanız
-inek gerçek sesle, kalanlar üretilen sesle çalar. mp3 dışında `m4a`, `ogg`
-ve `wav` de kabul edilir.
+Bir sesi beğenmezseniz dosyayı aynı adla değiştirmeniz yeterli —
+nasıl yapılacağı: [`sesler/README.md`](sesler/README.md)
 
-> Tarayıcı geliştirici konsolunda `sesler/*` için 404 uyarıları görürseniz normaldir:
-> uygulama hangi kayıtların var olduğuna bakıyor, bulamadıklarında üretilen sesle
-> devam ediyor.
+Bir ses dosyası eksik ya da bozuksa uygulama o hayvan için **kendi ürettiği yedek sese**
+döner (Web Audio ile), yani hiçbir hayvan sessiz kalmaz. Bu yedek sesler çizgi film
+tarzıdır, gerçek kaydın yerini tutmaz — sadece güvenlik ağıdır.
 
 ## Çocuk için düşünülmüş ayrıntılar
 
@@ -69,4 +66,4 @@ ve `wav` de kabul edilir.
 | Dosya            | Ne işe yarar                                     |
 |------------------|--------------------------------------------------|
 | `index.html`     | Uygulamanın tamamı — HTML, CSS, JavaScript, çizimler |
-| `sesler/`        | İsteğe bağlı gerçek hayvan sesi mp3'leri         |
+| `sesler/`        | Sekiz hayvanın ses kayıtları                     |
