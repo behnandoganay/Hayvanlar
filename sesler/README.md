@@ -1,36 +1,50 @@
-# Gerçek hayvan sesleri (isteğe bağlı)
+# Gerçek hayvan seslerini buraya koyun
 
-Uygulama sesleri kendi üretiyor, yani **bu klasör boş olsa da her şey çalışır**.
+Dosyaları **tam olarak bu adlarla** bu klasöre (`sesler/`) koymanız yeterli.
+Başka hiçbir şey yapmanıza gerek yok — uygulama açılışta bakıyor ve buluyor.
 
-Ama gerçek hayvan kayıtları kullanmak isterseniz, mp3 dosyalarını tam olarak
-şu adlarla bu klasöre koymanız yeterli:
+| Hayvan  | Dosya adı     | Aranacak İngilizce terim |
+|---------|---------------|--------------------------|
+| İnek    | `inek.mp3`    | cow moo                  |
+| Koyun   | `koyun.mp3`   | sheep baa / sheep bleat  |
+| Keçi    | `keci.mp3`    | goat bleat               |
+| Köpek   | `kopek.mp3`   | dog bark                 |
+| Kedi    | `kedi.mp3`    | cat meow                 |
+| Ördek   | `ordek.mp3`   | duck quack               |
+| Kurbağa | `kurbaga.mp3` | frog croak               |
+| At      | `at.mp3`      | horse neigh              |
 
-| Hayvan  | Dosya adı      |
-|---------|----------------|
-| İnek    | `inek.mp3`     |
-| Koyun   | `koyun.mp3`    |
-| Keçi    | `keci.mp3`     |
-| Köpek   | `kopek.mp3`    |
-| Kedi    | `kedi.mp3`     |
-| Ördek   | `ordek.mp3`    |
-| Kurbağa | `kurbaga.mp3`  |
-| At      | `at.mp3`       |
+**Dosya adlarında Türkçe harf yok** — `ö, ç, ğ, ı` yerine `o, c, g, i` yazın.
+Bazı sunucular Türkçe karakterli adlarda sorun çıkarıyor.
 
-Dosya adlarında Türkçe harf **yok** (ö, ç, ğ yerine o, c, g) — bazı sunucular
-Türkçe karakterli dosya adlarında sorun çıkarıyor.
+**Hepsini birden koymak zorunda değilsiniz.** Sadece `inek.mp3` koyarsanız
+yalnızca inek gerçek sesle çalar, kalanlar üretilen sesle devam eder.
 
-Uygulama açılırken her dosyayı tek tek yokluyor:
+**mp3 şart değil.** `m4a`, `ogg` ve `wav` de çalışır — indirdiğiniz dosya
+hangi biçimdeyse uzantısını değiştirmeden koyun (`inek.wav` gibi).
+Uygulama sırayla mp3 → m4a → ogg → wav diye bakıyor.
 
-- Dosya varsa → o hayvana dokunulduğunda **gerçek kayıt** çalar.
-- Dosya yoksa → sessizce **üretilen ses** çalmaya devam eder.
+## Nereden bulunur
 
-Yani hepsini birden koymak zorunda değilsiniz; sadece `inek.mp3` koyarsanız
-yalnız inek gerçek sesle, diğerleri üretilen sesle çalar.
+> Bu adresleri size önerirken internete bakamadım, o yüzden indirmeden önce
+> sayfadaki lisans bilgisini kendiniz görün.
 
-## Nelere dikkat etmeli
+- **Pixabay** — `pixabay.com/sound-effects/` — üyelik istemez, doğrudan mp3
+  indirtir, kaynak belirtme zorunluluğu yoktur. Başlamak için en kolayı.
+- **Freesound** — `freesound.org` — çok geniş arşiv, ücretsiz üyelik ister.
+  Filtrelerden **CC0** seçerseniz hiçbir koşulu olmayan sesleri görürsünüz.
+- **Wikimedia Commons** — `commons.wikimedia.org` — kamuya açık kayıtlar;
+  çoğu `ogg` veya `wav` biçiminde, ikisi de doğrudan çalışıyor.
+- **BBC Sound Effects** — `sound-effects.bbcrewind.co.uk` — kişisel kullanım
+  için ücretsiz, `wav` indirir.
 
-- **Kısa tutun** — 1–2 saniye ideal. Uzun kayıtlarda çocuk bir sonrakine
+## Seçerken nelere dikkat edin
+
+- **Kısa olsun** — 1–2 saniye ideal. Uzun kayıtta çocuk bir sonraki hayvana
   geçmek için beklemek zorunda kalıyor.
-- **Sesleri birbirine yakın seviyede** kaydedin, biri diğerinden çok yüksek olmasın.
-- **Telif** — internetten bulduğunuz her sesi kullanamazsınız. Ücretsiz ve serbest
-  kaynaklar için "CC0" veya "public domain" etiketli ses arşivlerine bakın.
+- **Baştaki sessizliği kırpın.** En sık yapılan hata bu: dosyanın başında
+  yarım saniye sessizlik varsa çocuk dokunuyor, hemen ses gelmiyor ve
+  uygulama bozuk sanılıyor. Ses dosyanın ilk anında başlamalı.
+- **Ses seviyeleri birbirine yakın olsun**, biri diğerinden çok gür olmasın.
+- **Tek hayvan olsun** — arka planda çiftlik gürültüsü, müzik veya insan
+  sesi olan kayıtları seçmeyin.

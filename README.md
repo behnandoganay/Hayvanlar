@@ -27,15 +27,23 @@ Birkaç dakika sonra çocuğunuza verebileceğiniz bir adres oluşur.
 
 ## Sesler
 
-Sesler tarayıcıda **Web Audio** ile anlık olarak üretiliyor — depoda hiç ses dosyası yok.
-Bu yüzden uygulama internetsiz de, hiçbir şey indirmeden de çalışıyor.
+**Gerçek hayvan sesi eklemek için:** mp3 dosyalarını `sesler/` klasörüne
+`inek.mp3`, `koyun.mp3`, `keci.mp3`, `kopek.mp3`, `kedi.mp3`, `ordek.mp3`,
+`kurbaga.mp3`, `at.mp3` adlarıyla koyun. Başka bir şey yapmanız gerekmiyor.
+Nereden bulacağınız ve nelere dikkat edeceğiniz:
+[`sesler/README.md`](sesler/README.md)
 
-Sesler çizgi film tarzıdır, gerçek hayvan kaydı değildir. Gerçek kayıt kullanmak
-isterseniz `sesler/` klasörüne mp3 koymanız yeterli — uygulama otomatik onları çalar.
-Ayrıntılar: [`sesler/README.md`](sesler/README.md)
+Klasör boşsa uygulama sesleri tarayıcıda **Web Audio** ile kendisi üretir.
+Bu sayede hiçbir şey indirmeden ve internetsiz de çalışır — ama üretilen sesler
+çizgi film tarzıdır, gerçek hayvan kaydının yerini tutmaz.
 
-> Tarayıcı geliştirici konsolunda `sesler/*.mp3` için 404 uyarıları görürseniz bu normaldir:
-> uygulama gerçek kayıt var mı diye yokluyor, yoksa kendi ürettiği sesle devam ediyor.
+İkisi hayvan bazında karışabilir: `inek.mp3` koyup diğerlerini koymazsanız
+inek gerçek sesle, kalanlar üretilen sesle çalar. mp3 dışında `m4a`, `ogg`
+ve `wav` de kabul edilir.
+
+> Tarayıcı geliştirici konsolunda `sesler/*` için 404 uyarıları görürseniz normaldir:
+> uygulama hangi kayıtların var olduğuna bakıyor, bulamadıklarında üretilen sesle
+> devam ediyor.
 
 ## Çocuk için düşünülmüş ayrıntılar
 

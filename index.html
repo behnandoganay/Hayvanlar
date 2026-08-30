@@ -682,17 +682,29 @@
   function cal(id) {
     durdur();   // cocuk butonlara ust uste bassin diye: her zaman tek ses
 
-    if (kayitlar[id]) {
-      var a = kayitlar[id];
+    var kayit = kayitlar[id];
+    if (kayit) {
       try {
-        a.currentTime = 0;
-        var s = a.play();
-        if (s && s.catch) s.catch(function () {});
-        aktifKayit = a;
+        kayit.currentTime = 0;
+        aktifKayit = kayit;
+        var soz = kayit.play();
+        if (soz && soz.catch) {
+          soz.catch(function () {
+            // Kayit calinamadi: bu hayvani kalici olarak sentez'e dondur
+            kayitlar[id] = null;
+            if (aktifKayit === kayit) aktifKayit = null;
+            sentezCal(id);
+          });
+        }
         return;
-      } catch (e) { /* kayit calmadi, sentezle devam */ }
+      } catch (e) {
+        kayitlar[id] = null;
+      }
     }
+    sentezCal(id);
+  }
 
+  function sentezCal(id) {
     var c = sesMotoru();
     if (!c || !SENTEZ[id]) return;
     var cikis = c.createGain();
@@ -708,13 +720,40 @@
     }, (sure + 0.3) * 1000);
   }
 
-  // Acilista gercek kayitlari yokla; varsa devral, yoksa sessizce sentezde kal
-  function kayitlariYokla(idler) {
-    idler.forEach(function (id) {
-      var a = new Audio('sesler/' + id + '.mp3');
-      a.preload = 'auto';
-      a.addEventListener('canplaythrough', function () { kayitlar[id] = a; }, { once: true });
-      a.addEventListener('error', function () {}, { once: true });
+  /* Her hayvan icin "sesler/<id>.<bicim>" dosyalarini sirayla yokla.
+     mp3 yoksa m4a, ogg, wav deneniyor — indirdiginiz dosyayi donusturmek
+     zorunda kalmayin diye. Hicbiri bulunamazsa o hayvan sentez sesinde kalir.
+
+     Neden her bicimi ayri <audio> ile deniyoruz: tek bir <audio> icine dort
+     <source> koymak ise yaramiyor. Tum kaynaklar tukendiginde tarayici
+     'error' olayini <audio> uzerinde tetiklemiyor ve play() sozu hic
+     sonuclanmiyor; oyle yapinca dosyasi olmayan hayvanlar tamamen susuyor.  */
+  var KAYIT_BICIMLERI = ['mp3', 'm4a', 'ogg', 'wav'];
+  var yoklananlar = {};      // id -> su an denenen <audio> (bitince null)
+
+  function kayitYokla(id, sira) {
+    if (sira >= KAYIT_BICIMLERI.length) { yoklananlar[id] = null; return; }
+    var a = new Audio('sesler/' + id + '.' + KAYIT_BICIMLERI[sira]);
+    a.preload = 'auto';
+    yoklananlar[id] = a;
+    a.addEventListener('error', function () { kayitYokla(id, sira + 1); }, { once: true });
+    a.addEventListener('loadedmetadata', function () {
+      kayitlar[id] = a;        // dosya gercekten var: bundan sonra bu calacak
+      yoklananlar[id] = null;
+    }, { once: true });
+  }
+
+  function kayitlariHazirla(idler) {
+    idler.forEach(function (id) { kayitYokla(id, 0); });
+  }
+
+  /* iOS/Safari veri tasarrufu icin on yuklemeyi cogu zaman atlar; dosya var
+     olsa bile 'loadedmetadata' gelmeyebilir. Ilk dokunus bir kullanici
+     hareketidir, yoklamayi orada tekrar baslatiyoruz.                     */
+  function kayitlariUyandir() {
+    Object.keys(yoklananlar).forEach(function (id) {
+      var a = yoklananlar[id];
+      if (a) { try { a.load(); } catch (e) {} }
     });
   }
 
@@ -759,13 +798,14 @@
      ================================================================== */
 
   var kartlar = Array.prototype.slice.call(document.querySelectorAll('.kart'));
-  kayitlariYokla(kartlar.map(function (k) { return k.dataset.hayvan; }));
+  kayitlariHazirla(kartlar.map(function (k) { return k.dataset.hayvan; }));
 
   kartlar.forEach(function (kart) {
     var id = kart.dataset.hayvan;
 
     function dokun(e) {
       if (e.pointerType === 'mouse' && e.button !== 0) return;
+      kayitlariUyandir();
       cal(id);
       canlandir(kart);
     }
@@ -782,8 +822,9 @@
   // Cocuk parmagini basili tutunca menu acilmasin
   document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
 
-  // Testlerin sentez fonksiyonlarina erisebilmesi icin
-  window.HAYVAN_SESLERI = SENTEZ;
+  // Testlerin erisebilmesi icin
+  window.HAYVAN_SESLERI = SENTEZ;      // sentez receteleri
+  window.HAYVAN_KAYITLARI = kayitlar;  // gercek kayit elemanlari (varsa)
 })();
 </script>
 
