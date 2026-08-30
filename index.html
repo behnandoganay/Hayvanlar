@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#FFF7E8">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>Hayvanlar</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%90%84%3C/text%3E%3C/svg%3E">
+<style>
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    height: 100%;
+    overscroll-behavior: none;          /* asagi cekince sayfa yenilenmesin */
+  }
+
+  body {
+    background: radial-gradient(120% 90% at 50% 0%, #FFFDF6 0%, #FFF3DC 55%, #FFE7CE 100%);
+    color: #5A4A3A;
+    font-family: "Nunito", "Quicksand", "Trebuchet MS", system-ui, -apple-system, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 18px 14px calc(24px + env(safe-area-inset-bottom));
+
+    /* cocuk parmagi icin: secim, uzun basma menusu, cift dokunma zoomu kapali */
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  h1 {
+    margin: 6px 0 18px;
+    font-size: clamp(22px, 5vw, 32px);
+    font-weight: 800;
+    letter-spacing: .06em;
+    color: #C98A4B;
+    text-shadow: 0 2px 0 #FFF8EC;
+  }
+
+  .izgara {
+    width: 100%;
+    max-width: 760px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);       /* telefon: 2 sutun x 4 satir */
+    gap: clamp(12px, 2.5vw, 20px);
+  }
+
+  @media (min-width: 620px) {
+    .izgara { grid-template-columns: repeat(4, 1fr); }   /* tablet: 4 x 2 */
+  }
+
+  .kart {
+    position: relative;
+    aspect-ratio: 1;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 26px;
+    padding: 0;
+    cursor: pointer;
+    background: var(--zemin);
+    box-shadow: 0 6px 0 rgba(150, 110, 70, .13), 0 10px 22px rgba(150, 110, 70, .12);
+    transition: box-shadow .15s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
+  .kart:focus-visible {
+    outline: 4px solid #F5B24A;
+    outline-offset: 3px;
+  }
+
+  .cizim {
+    width: 80%;
+    height: 80%;
+    display: block;
+    pointer-events: none;              /* dokunus her zaman butona gitsin */
+  }
+
+  /* ---- dokununca canlanma ---- */
+
+  @keyframes zipla {
+    0%   { transform: scale(1); }
+    25%  { transform: scale(.92); }
+    55%  { transform: scale(1.08); }
+    100% { transform: scale(1); }
+  }
+
+  @keyframes salla {
+    0%, 100% { transform: rotate(0deg); }
+    25%      { transform: rotate(-7deg); }
+    60%      { transform: rotate(6deg); }
+  }
+
+  @keyframes dalga {
+    from { transform: scale(.72); opacity: .5; }
+    to   { transform: scale(1.45); opacity: 0; }
+  }
+
+  @keyframes ucus {
+    from { transform: translate(0, 0) scale(.5) rotate(0deg); opacity: 0; }
+    18%  { opacity: 1; }
+    to   { transform: translate(var(--x), -92px) scale(1.15) rotate(var(--r)); opacity: 0; }
+  }
+
+  .kart.oynat            { animation: zipla .45s cubic-bezier(.34, 1.56, .64, 1); }
+  .kart.oynat .cizim     { animation: salla .5s ease; }
+
+  .halka {
+    position: absolute;
+    inset: 0;
+    border-radius: 26px;
+    border: 4px solid rgba(255, 255, 255, .95);
+    animation: dalga .55s ease-out forwards;
+    pointer-events: none;
+  }
+
+  .simge {
+    position: absolute;
+    left: 50%;
+    top: 22%;                          /* hayvanin yuzunu kapatmasin, yukaridan cikip ucsun */
+    font-size: 22px;
+    animation: ucus .95s ease-out forwards;
+    pointer-events: none;
+    will-change: transform, opacity;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kart.oynat, .kart.oynat .cizim, .halka, .simge { animation: none; }
+    .halka, .simge { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<h1>HAYVANLAR</h1>
+
+<main class="izgara" id="izgara">
+
+  <!-- ============ INEK ============ -->
+  <button class="kart" data-hayvan="inek" style="--zemin:#FDE7E7" aria-label="İnek">
+    <svg class="cizim" viewBox="0 0 100 100" aria-hidden="true">
+      <defs><clipPath id="k-inek"><ellipse cx="50" cy="48" rx="31" ry="29"/></clipPath></defs>
+      <ellipse cx="17" cy="47" rx="11" ry="7.5" fill="#D6CCC2" transform="rotate(-18 17 47)"/>
+      <ellipse cx="83" cy="47" rx="11" ry="7.5" fill="#D6CCC2" transform="rotate(18 83 47)"/>
+      <path d="M32 27 q-7 -8 -2 -13 q7 3 8 11z" fill="#EFDCA9"/>
+      <path d="M68 27 q7 -8 2 -13 q-7 3 -8 11z" fill="#EFDCA9"/>
+      <ellipse cx="50" cy="48" rx="31" ry="29" fill="#FFFCF6"/>
+      <g clip-path="url(#k-inek)">
+        <path d="M30 24 q16 -5 22 7 q-7 13 -22 10 q-9 -9 0 -17z" fill="#5D5666"/>
+        <path d="M74 33 q8 7 2 14 q-9 1 -10 -8 q3 -7 8 -6z" fill="#5D5666"/>
+      </g>
+      <circle cx="38" cy="46" r="5.4" fill="#3E3A44"/>
+      <circle cx="62" cy="46" r="5.4" fill="#3E3A44"/>
+      <circle cx="39.9" cy="44.1" r="2" fill="#fff"/>
+      <circle cx="63.9" cy="44.1" r="2" fill="#fff"/>
+      <ellipse cx="26" cy="56" rx="5" ry="3.2" fill="#F4A6AE" opacity=".65"/>
+      <ellipse cx="74" cy="56" rx="5" ry="3.2" fill="#F4A6AE" opacity=".65"/>
+      <ellipse cx="50" cy="65" rx="19" ry="13" fill="#F9C2C8"/>
+      <ellipse cx="43" cy="62" rx="2.6" ry="3.4" fill="#E28E98"/>
+      <ellipse cx="57" cy="62" rx="2.6" ry="3.4" fill="#E28E98"/>
+      <path d="M43 70 q7 5 14 0" stroke="#E28E98" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- ============ KOYUN ============ -->
+  <button class="kart" data-hayvan="koyun" style="--zemin:#E9F1FB" aria-label="Koyun">
+    <svg class="cizim" viewBox="0 0 100 100" aria-hidden="true">
+      <g fill="#DFD8CC">
+        <circle cx="27" cy="34" r="13"/><circle cx="50" cy="25" r="14"/><circle cx="73" cy="34" r="13"/>
+        <circle cx="20" cy="53" r="12"/><circle cx="80" cy="53" r="12"/>
+        <circle cx="33" cy="68" r="12"/><circle cx="67" cy="68" r="12"/><circle cx="50" cy="72" r="12"/>
+      </g>
+      <circle cx="50" cy="48" r="21" fill="#FFFFFF"/>
+      <ellipse cx="24" cy="54" rx="9" ry="5.8" fill="#BCA88C" transform="rotate(-22 24 54)"/>
+      <ellipse cx="76" cy="54" rx="9" ry="5.8" fill="#BCA88C" transform="rotate(22 76 54)"/>
+      <ellipse cx="50" cy="56" rx="19" ry="18" fill="#D8C3A6"/>
+      <circle cx="39" cy="40" r="9.5" fill="#FFFFFF"/>
+      <circle cx="52" cy="36" r="10.5" fill="#FFFFFF"/>
+      <circle cx="63" cy="41" r="8.5" fill="#FFFFFF"/>
+      <circle cx="43" cy="55" r="4.6" fill="#3E3A44"/>
+      <circle cx="57" cy="55" r="4.6" fill="#3E3A44"/>
+      <circle cx="44.6" cy="53.4" r="1.7" fill="#fff"/>
+      <circle cx="58.6" cy="53.4" r="1.7" fill="#fff"/>
+      <ellipse cx="35" cy="62" rx="4.2" ry="2.8" fill="#F2AEB4" opacity=".7"/>
+      <ellipse cx="65" cy="62" rx="4.2" ry="2.8" fill="#F2AEB4" opacity=".7"/>
+      <ellipse cx="50" cy="62" rx="3" ry="2.1" fill="#9C7F65"/>
+      <path d="M45 67 q5 4.5 10 0" stroke="#9C7F65" stroke-width="2.1" fill="none" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- ============ KECI ============ -->
+  <button class="kart" data-hayvan="keci" style="--zemin:#F2EDFB" aria-label="Keçi">
+    <svg class="cizim" viewBox="0 0 100 100" aria-hidden="true">
+      <path d="M43 24 C 39 16, 35 11, 28 9" fill="none" stroke="#B0916A" stroke-width="7" stroke-linecap="round"/>
+      <path d="M57 24 C 61 16, 65 11, 72 9" fill="none" stroke="#B0916A" stroke-width="7" stroke-linecap="round"/>
+      <ellipse cx="16" cy="49" rx="13" ry="6" fill="#CDBBA1" transform="rotate(24 16 49)"/>
+      <ellipse cx="84" cy="49" rx="13" ry="6" fill="#CDBBA1" transform="rotate(-24 84 49)"/>
+      <ellipse cx="50" cy="45" rx="25" ry="24" fill="#F8F2E8"/>
+      <ellipse cx="50" cy="63" rx="15.5" ry="14" fill="#F8F2E8"/>
+      <path d="M43 71 q7 4 14 0 q-2 9 -7 11 q-5 -2 -7 -11z" fill="#EADDC6"/>
+      <circle cx="40" cy="44" r="5" fill="#3E3A44"/>
+      <circle cx="60" cy="44" r="5" fill="#3E3A44"/>
+      <circle cx="41.7" cy="42.2" r="1.8" fill="#fff"/>
+      <circle cx="61.7" cy="42.2" r="1.8" fill="#fff"/>
+      <ellipse cx="31" cy="54" rx="4.6" ry="3" fill="#EFA9B8" opacity=".6"/>
+      <ellipse cx="69" cy="54" rx="4.6" ry="3" fill="#EFA9B8" opacity=".6"/>
+      <ellipse cx="45.5" cy="61" rx="2.3" ry="1.7" fill="#C6A489"/>
+      <ellipse cx="54.5" cy="61" rx="2.3" ry="1.7" fill="#C6A489"/>
+      <path d="M45 67 q5 4.5 10 0" stroke="#C6A489" stroke-width="2.1" fill="none" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+  <!-- ============ KOPEK ============ -->
+  <button class="kart" data-hayvan="kopek" style="--zemin:#FBEFDF" aria-label="Köpek">
+    <svg class="cizim" viewBox="0 0 100 100" aria-hidden="true">
+      <defs><clipPath id="k-kopek"><ellipse cx="50" cy="46" rx="29" ry="27"/></clipPath></defs>
+      <ellipse cx="18" cy="51" rx="10.5" ry="19" fill="#AE7139" transform="rotate(11 18 51)"/>
+      <ellipse cx="82" cy="51" rx="10.5" ry="19" fill="#AE7139" transform="rotate(-11 82 51)"/>
+      <ellipse cx="50" cy="46" rx="29" ry="27" fill="#E9A75F"/>
+      <g clip-path="url(#k-kopek)">
+        <path d="M50 17 q11 13 7 27 q-7 7 -14 0 q-4 -15 7 -27z" fill="#F7CB92"/>
+      </g>
+      <circle cx="39" cy="43" r="5.2" fill="#3E3A44"/>
+      <circle cx="61" cy="43" r="5.2" fill="#3E3A44"/>
+      <circle cx="40.8" cy="41.1" r="1.9" fill="#fff"/>
+      <circle cx="64.8" cy="41.1" r="1.9" fill="#fff"/>
+      <ellipse cx="27" cy="55" rx="5" ry="3.2" fill="#EE9AA2" opacity=".55"/>
+      <ellipse cx="73" cy="55" rx="5" ry="3.2" fill="#EE9AA2" opacity=".55"/>
+      <ellipse cx="50" cy="62" rx="17" ry="13" fill="#FBEAD3"/>
+      <ellipse cx="50" cy="57" rx="6.5" ry="5" fill="#4A4550"/>
+      <ellipse cx="47.8" cy="55.6" rx="1.5" ry="1.1" fill="#fff" opacity=".55"/>
+      <path d="M50 62 v3.5 M50 65.5 q-6 5.5 -9.5 .5 M50 65.5 q6 5.5 9.5 .5" stroke="#B98F63" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+      <path d="M45.5 68 q4.5 11 9 0z" fill="#F58FA0"/>
+    </svg>
+  </button>
+
+  <!-- ============ KEDI ============ -->
+  <button class="kart" data-hayvan="kedi" style="--zemin:#FDECE1" aria-label="Kedi">
+    <svg class="cizim" viewBox="0 0 100 100" aria-hidden="true">
+      <defs><clipPath id="k-kedi"><ellipse cx="50" cy="50" rx="30" ry="27"/></clipPath></defs>
+      <path d="M25 36 L26 11 L46 25z" fill="#EF9455"/>
+      <path d="M75 36 L74 11 L54 25z" fill="#EF9455"/>
+      <path d="M30 31 L31 18 L41 26z" fill="#F8C0A4"/>
+      <path d="M70 31 L69 18 L59 26z" fill="#F8C0A4"/>
+      <ellipse cx="50" cy="50" rx="30" ry="27" fill="#F4A263"/>
+      <g clip-path="url(#k-kedi)" stroke="#DC8842" stroke-width="4" stroke-linecap="round">
+        <path d="M50 22 v14"/><path d="M37 26 v12"/><path d="M63 26 v12"/>
+      </g>
+      <circle cx="38" cy="47" r="5.6" fill="#3E3A44"/>
+      <circle cx="62" cy="47" r="5.6" fill="#3E3A44"/>
+      <circle cx="39.9" cy="45" r="2" fill="#fff"/>
+      <circle cx="63.9" cy="45" r="2" fill="#fff"/>
+      <ellipse cx="26" cy="57" rx="5" ry="3.2" fill="#EE8C9E" opacity=".5"/>
+      <ellipse cx="74" cy="57" rx="5" ry="3.2" fill="#EE8C9E" opacity=".5"/>
+      <ellipse cx="43" cy="63" rx="8.5" ry="6.5" fill="#FFF3E4"/>
+      <ellipse cx="57" cy="63" rx="8.5" ry="6.5" fill="#FFF3E4"/>
+      <path d="M45.5 56 q4.5 -1.7 9 0 q.6 2.1 -4.5 6.2 q-5.1 -4.1 -4.5 -6.2z" fill="#F0899C"/>
+      <path d="M50 62.5 v3 M50 65.5 q-5 5 -8.5 .8 M50 65.5 q5 5 8.5 .8" stroke="#C97C43" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <g stroke="#E8CDAF" stroke-width="1.8" stroke-linecap="round">
+        <path d="M31 60 h-13"/><path d="M31 65 h-14"/><path d="M69 60 h13"/><path d="M69 65 h14"/>
+      </g>
+    </svg>
+  </button>
+
+  <!-- ============ ORDEK ============ -->
+  <button class="kart" data-hayvan="ordek" style="--zemin:#FCF6DC" aria-label="Ördek">
+    <svg class="cizim" viewBox="0 0 100 100" aria-hidden="true">
+      <path d="M51 21 q-3 -13 9 -16 q-4 9 2 13z" fill="#FBD85D"/>
+      <circle cx="50" cy="47" r="28" fill="#FBD85D"/>
+      <path d="M50 19 q-9 6 -11 15 q10 -8 22 -4 q-3 -8 -11 -11z" fill="#FDE68C"/>
+      <circle cx="39" cy="43" r="5.2" fill="#3E3A44"/>
+      <circle cx="61" cy="43" r="5.2" fill="#3E3A44"/>
+      <circle cx="40.9" cy="41.1" r="1.9" fill="#fff"/>
+      <circle cx="62.9" cy="41.1" r="1.9" fill="#fff"/>
+      <ellipse cx="29" cy="55" rx="5.4" ry="3.5" fill="#F49A93" opacity=".6"/>
+      <ellipse cx="71" cy="55" rx="5.4" ry="3.5" fill="#F49A93" opacity=".6"/>
+      <ellipse cx="50" cy="64" rx="17" ry="9.5" fill="#F2913D"/>
+      <path d="M35 64 q15 5.5 30 0" stroke="#D97B2C" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+      <ellipse cx="44" cy="60" rx="1.5" ry="1.1" fill="#D97B2C"/>
+      <ellipse cx="56" cy="60" rx="1.5" ry="1.1" fill="#D97B2C"/>
+    </svg>
+  </button>
+
+  <!-- ============ KURBAGA ============ -->
+  <button class="kart" data-hayvan="kurbaga" style="--zemin:#E7F6E9" aria-label="Kurbağa">
+    <svg class="cizim" viewBox="0 0 100 100" aria-hidden="true">
+      <ellipse cx="50" cy="59" rx="33" ry="26" fill="#7CC57C"/>
+      <ellipse cx="50" cy="71" rx="21" ry="12" fill="#CDEAAB" opacity=".65"/>
+      <circle cx="30" cy="34" r="15" fill="#8ACF87"/>
+      <circle cx="70" cy="34" r="15" fill="#8ACF87"/>
+      <circle cx="30" cy="33" r="10.5" fill="#FFFFFF"/>
+      <circle cx="70" cy="33" r="10.5" fill="#FFFFFF"/>
+      <circle cx="31" cy="34" r="5.4" fill="#3E3A44"/>
+      <circle cx="69" cy="34" r="5.4" fill="#3E3A44"/>
+      <circle cx="32.9" cy="32.1" r="2" fill="#fff"/>
+      <circle cx="70.9" cy="32.1" r="2" fill="#fff"/>
+      <circle cx="45" cy="49" r="1.7" fill="#4E9B57"/>
+      <circle cx="55" cy="49" r="1.7" fill="#4E9B57"/>
+      <path d="M29 57 q21 20 42 0" stroke="#4E9B57" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <ellipse cx="25" cy="57" rx="5" ry="3.4" fill="#F0959E" opacity=".55"/>
+      <ellipse cx="75" cy="57" rx="5" ry="3.4" fill="#F0959E" opacity=".55"/>
+    </svg>
+  </button>
+
+  <!-- ============ AT ============ -->
+  <button class="kart" data-hayvan="at" style="--zemin:#F1EBE4" aria-label="At">
+    <svg class="cizim" viewBox="0 0 100 100" aria-hidden="true">
+      <defs><clipPath id="k-at"><ellipse cx="50" cy="44" rx="26" ry="24"/></clipPath></defs>
+      <path d="M35 25 q-6 -16 2 -21 q9 8 6 21z" fill="#B98457"/>
+      <path d="M65 25 q6 -16 -2 -21 q-9 8 -6 21z" fill="#B98457"/>
+      <path d="M27 38 C 25 22, 35 13, 50 13 C 65 13, 75 22, 73 38 C 69 26, 61 20, 50 20 C 39 20, 31 26, 27 38 Z" fill="#6E4B33"/>
+      <ellipse cx="50" cy="44" rx="26" ry="24" fill="#C58F60"/>
+      <g clip-path="url(#k-at)">
+        <path d="M50 18 q7 15 3 27 q-4 5 -7 0 q-3 -15 4 -27z" fill="#F0DDC6"/>
+      </g>
+      <ellipse cx="50" cy="68" rx="17" ry="15" fill="#DBAD82"/>
+      <circle cx="38" cy="42" r="5.2" fill="#3E3A44"/>
+      <circle cx="62" cy="42" r="5.2" fill="#3E3A44"/>
+      <circle cx="39.9" cy="40.1" r="1.9" fill="#fff"/>
+      <circle cx="63.9" cy="40.1" r="1.9" fill="#fff"/>
+      <ellipse cx="28" cy="55" rx="4.8" ry="3.1" fill="#EC9EA6" opacity=".5"/>
+      <ellipse cx="72" cy="55" rx="4.8" ry="3.1" fill="#EC9EA6" opacity=".5"/>
+      <ellipse cx="44" cy="65" rx="2.7" ry="3.5" fill="#A87A55"/>
+      <ellipse cx="56" cy="65" rx="2.7" ry="3.5" fill="#A87A55"/>
+      <path d="M44 74 q6 4.5 12 0" stroke="#A87A55" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+    </svg>
+  </button>
+
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ==================================================================
+     1. SES MOTORU  —  Web Audio ile sentez
+     ------------------------------------------------------------------
+     Bu oturumda hazir hayvan sesi kaydi indirilemedigi icin sesler
+     tarayicida sifirdan uretiliyor. Her ses fonksiyonu AudioContext'i
+     disaridan aliyor; boylece test sirasinda OfflineAudioContext ile
+     de calistirilip gercekten ses uretildigi dogrulanabiliyor.
+     ================================================================== */
+
+  function rastgele(alt, ust) {
+    return alt + Math.random() * (ust - alt);
+  }
+
+  // Perde noktalarini topluca kaydirir (her calista kucuk bir farklilik icin)
+  function perdele(noktalar, katsayi) {
+    return noktalar.map(function (n) { return [n[0], n[1] * katsayi]; });
+  }
+
+  // [zaman, deger] noktalarini bir AudioParam'a dogrusal egri olarak uygular
+  function egri(param, noktalar, t0) {
+    var ilk = Math.max(noktalar[0][1], 0.0001);
+    param.setValueAtTime(ilk, t0 + noktalar[0][0]);
+    for (var i = 1; i < noktalar.length; i++) {
+      param.linearRampToValueAtTime(Math.max(noktalar[i][1], 0.0001), t0 + noktalar[i][0]);
+    }
+  }
+
+  function frekansAyarla(param, deger, t0) {
+    if (Array.isArray(deger)) egri(param, deger, t0);
+    else param.setValueAtTime(deger, t0);
+  }
+
+  // Beyaz gurultu tamponu — nefes, havlama tislamasi icin
+  function gurultuTamponu(ctx, sure) {
+    var n = Math.max(1, Math.floor(ctx.sampleRate * sure));
+    var buf = ctx.createBuffer(1, n, ctx.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1;
+    return buf;
+  }
+
+  // Yumusak doyum (nazal/ciyaklayan karakter icin)
+  function bozucu(ctx, miktar) {
+    var ws = ctx.createWaveShaper();
+    // Tek sayida nokta: x=0 tam ortadaki noktaya denk gelsin. Cift sayida olursa
+    // sessiz girdide bile kucuk bir sabit cikis (DC kaymasi) kaliyor ve ses bitmiyor.
+    var n = 1025, c = new Float32Array(n), b = Math.tanh(miktar);
+    for (var i = 0; i < n; i++) {
+      var x = (i * 2) / (n - 1) - 1;
+      c[i] = Math.tanh(x * miktar) / b;
+    }
+    ws.curve = c;
+    return ws;
+  }
+
+  /* Otus: bir osilator + paralel formant filtreleri + genlik zarfi.
+     Formantlar hayvan sesine "unlu harf" karakterini veren seydir —
+     "mooo", "meee", "miyav" arasindaki farki asil bunlar yaratir.    */
+  function otus(ctx, hedef, t0, a) {
+    var osc = ctx.createOscillator();
+    osc.type = a.tip || 'sawtooth';
+    egri(osc.frequency, a.perde, t0);
+
+    var zarf = ctx.createGain();
+    zarf.gain.setValueAtTime(0.0001, t0);
+    egri(zarf.gain, a.zarf, t0);
+    osc.connect(zarf);
+
+    var toplam = ctx.createGain();
+    toplam.gain.value = a.ses == null ? 0.55 : a.ses;
+
+    var formantlar = a.formantlar || [];
+    if (formantlar.length) {
+      formantlar.forEach(function (f) {
+        var bp = ctx.createBiquadFilter();
+        bp.type = 'bandpass';
+        bp.Q.value = f.Q == null ? 6 : f.Q;
+        frekansAyarla(bp.frequency, f.frek, t0);
+        var kz = ctx.createGain();
+        kz.gain.value = f.kazanc == null ? 1 : f.kazanc;
+        zarf.connect(bp); bp.connect(kz); kz.connect(toplam);
+      });
+    } else {
+      zarf.connect(toplam);
+    }
+    toplam.connect(hedef);
+
+    // Titreme (meleme / kisneme): zarf kazancini moduleeden LFO
+    if (a.titreme) {
+      var lfo = ctx.createOscillator();
+      lfo.type = a.titreme.tip || 'sine';
+      frekansAyarla(lfo.frequency, a.titreme.hiz, t0);
+      var derinlik = ctx.createGain();
+      derinlik.gain.value = a.titreme.derinlik;
+      lfo.connect(derinlik);
+      derinlik.connect(zarf.gain);
+      lfo.start(t0); lfo.stop(t0 + a.sure);
+    }
+
+    // Vibrato: perdeyi moduleeden LFO
+    if (a.vibrato) {
+      var vlfo = ctx.createOscillator();
+      vlfo.frequency.value = a.vibrato.hiz;
+      var vd = ctx.createGain();
+      vd.gain.value = a.vibrato.derinlik;
+      vlfo.connect(vd);
+      vd.connect(osc.frequency);
+      vlfo.start(t0); vlfo.stop(t0 + a.sure);
+    }
+
+    osc.start(t0);
+    osc.stop(t0 + a.sure);
+    return toplam;
+  }
+
+  // Gurultu katmani (nefes, havlamanin tislamasi)
+  function hisirti(ctx, hedef, t0, a) {
+    var src = ctx.createBufferSource();
+    src.buffer = gurultuTamponu(ctx, a.sure);
+    var bp = ctx.createBiquadFilter();
+    bp.type = a.tip || 'bandpass';
+    bp.Q.value = a.Q == null ? 1 : a.Q;
+    frekansAyarla(bp.frequency, a.frek, t0);
+    var g = ctx.createGain();
+    g.gain.setValueAtTime(0.0001, t0);
+    egri(g.gain, a.zarf, t0);
+    src.connect(bp); bp.connect(g); g.connect(hedef);
+    src.start(t0);
+    src.stop(t0 + a.sure);
+  }
+
+  /* ---------- Hayvan receteleri ----------
+     Her biri sesi kurar ve toplam suresini (saniye) dondurur. */
+
+  var SENTEZ = {
+
+    // "Mööö" — alcak perde, yavas atak, "o"dan "u"ya kayan formantlar
+    inek: function (ctx, hedef, t0) {
+      var j = rastgele(0.94, 1.06), sure = 1.15;
+      otus(ctx, hedef, t0, {
+        sure: sure, tip: 'sawtooth', ses: 1.9,
+        perde: perdele([[0, 118], [0.15, 132], [0.6, 122], [1.15, 95]], j),
+        zarf:  [[0, 0], [0.13, 0.9], [0.75, 0.82], [1.12, 0]],
+        vibrato: { hiz: 5.5, derinlik: 3 },
+        formantlar: [
+          { frek: [[0, 560], [0.5, 480], [1.15, 380]], Q: 5, kazanc: 1 },
+          { frek: [[0, 1080], [0.5, 920], [1.15, 760]], Q: 7, kazanc: 0.5 },
+          { frek: 2400, Q: 3, kazanc: 0.12 }
+        ]
+      });
+      return sure + 0.1;
+    },
+
+    // "Meee" — orta perde, 13 Hz meleme titremesi
+    koyun: function (ctx, hedef, t0) {
+      var j = rastgele(0.95, 1.05), sure = 0.95;
+      otus(ctx, hedef, t0, {
+        sure: sure, tip: 'sawtooth', ses: 1.5,
+        perde: perdele([[0, 268], [0.08, 318], [0.5, 302], [0.95, 252]], j),
+        zarf:  [[0, 0], [0.06, 0.82], [0.7, 0.72], [0.93, 0]],
+        titreme: { hiz: [[0, 4], [0.25, 13], [0.95, 15]], derinlik: 0.42 },
+        formantlar: [
+          { frek: [[0, 520], [0.2, 760], [0.95, 700]], Q: 6, kazanc: 1 },
+          { frek: [[0, 1200], [0.2, 1900], [0.95, 1750]], Q: 8, kazanc: 0.55 },
+          { frek: 2900, Q: 4, kazanc: 0.15 }
+        ]
+      });
+      return sure + 0.1;
+    },
+
+    // "Meee" — koyundan daha tiz, daha hizli titrek, sonda perde dususu
+    keci: function (ctx, hedef, t0) {
+      var j = rastgele(0.95, 1.05), sure = 0.85;
+      otus(ctx, hedef, t0, {
+        sure: sure, tip: 'sawtooth', ses: 1.2,
+        perde: perdele([[0, 375], [0.07, 442], [0.45, 425], [0.72, 408], [0.85, 298]], j),
+        zarf:  [[0, 0], [0.05, 0.8], [0.62, 0.7], [0.83, 0]],
+        titreme: { hiz: [[0, 6], [0.2, 19], [0.85, 22]], derinlik: 0.48 },
+        formantlar: [
+          { frek: [[0, 600], [0.18, 900], [0.85, 840]], Q: 6, kazanc: 1 },
+          { frek: [[0, 1500], [0.18, 2100], [0.85, 1950]], Q: 8, kazanc: 0.5 },
+          { frek: 3200, Q: 4, kazanc: 0.14 }
+        ]
+      });
+      return sure + 0.1;
+    },
+
+    // "Hav hav" — iki kisa patlama, cok hizli atak
+    kopek: function (ctx, hedef, t0) {
+      var j = rastgele(0.93, 1.07);
+      function havla(t, k) {
+        otus(ctx, hedef, t, {
+          sure: 0.2, tip: 'sawtooth', ses: 1.45,
+          perde: perdele([[0, 300], [0.03, 430], [0.09, 330], [0.2, 200]], j * k),
+          zarf:  [[0, 0], [0.012, 1], [0.07, 0.45], [0.19, 0]],
+          formantlar: [
+            { frek: [[0, 500], [0.05, 900], [0.2, 640]], Q: 4, kazanc: 1 },
+            { frek: [[0, 1400], [0.05, 1900], [0.2, 1300]], Q: 5, kazanc: 0.5 }
+          ]
+        });
+        hisirti(ctx, hedef, t, {
+          sure: 0.12, frek: [[0, 2200], [0.12, 900]], Q: 1.2,
+          zarf: [[0, 0], [0.01, 0.25], [0.12, 0]]
+        });
+      }
+      havla(t0, 1);
+      havla(t0 + 0.26, 0.92);
+      return 0.55;
+    },
+
+    // "Miyav" — perde yukari-asagi, formantlar i -> a -> u boyunca kayiyor
+    kedi: function (ctx, hedef, t0) {
+      var j = rastgele(0.95, 1.05), sure = 0.8;
+      otus(ctx, hedef, t0, {
+        sure: sure, tip: 'sawtooth', ses: 1.05,
+        perde: perdele([[0, 400], [0.12, 660], [0.35, 690], [0.8, 375]], j),
+        zarf:  [[0, 0], [0.07, 0.88], [0.55, 0.78], [0.78, 0]],
+        vibrato: { hiz: 6, derinlik: 8 },
+        formantlar: [
+          { frek: [[0, 300], [0.3, 850], [0.55, 700], [0.8, 420]], Q: 5, kazanc: 1 },
+          { frek: [[0, 2200], [0.3, 1300], [0.8, 900]], Q: 6, kazanc: 0.55 },
+          { frek: 3000, Q: 3, kazanc: 0.12 }
+        ]
+      });
+      return sure + 0.1;
+    },
+
+    // "Vak vak vak" — uc kisa, genizden, doyuma ugramis patlama
+    ordek: function (ctx, hedef, t0) {
+      var j = rastgele(0.94, 1.06);
+      var bz = bozucu(ctx, 5);
+      var lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass';
+      lp.frequency.value = 2600;
+      var kz = ctx.createGain();
+      kz.gain.value = 0.7;
+      bz.connect(lp); lp.connect(kz); kz.connect(hedef);
+      function vak(t, k) {
+        otus(ctx, bz, t, {
+          sure: 0.14, tip: 'sawtooth', ses: 0.9,
+          perde: perdele([[0, 340], [0.04, 300], [0.14, 232]], j * k),
+          zarf:  [[0, 0], [0.015, 1], [0.08, 0.65], [0.135, 0]],
+          formantlar: [
+            { frek: [[0, 1150], [0.14, 950]], Q: 9, kazanc: 1 },
+            { frek: [[0, 2000], [0.14, 1750]], Q: 7, kazanc: 0.45 }
+          ]
+        });
+      }
+      vak(t0, 1);
+      vak(t0 + 0.2, 0.97);
+      vak(t0 + 0.4, 0.92);
+      return 0.6;
+    },
+
+    // "Vırak vırak" — 28 Hz kare LFO ile genlik modulasyonu = giralti
+    kurbaga: function (ctx, hedef, t0) {
+      var j = rastgele(0.93, 1.07);
+      function vrak(t, k) {
+        otus(ctx, hedef, t, {
+          sure: 0.3, tip: 'sawtooth', ses: 1.5,
+          perde: perdele([[0, 150], [0.1, 138], [0.3, 124]], j * k),
+          zarf:  [[0, 0], [0.03, 0.72], [0.24, 0.66], [0.3, 0]],
+          titreme: { hiz: [[0, 24], [0.3, 30]], tip: 'square', derinlik: 0.52 },
+          formantlar: [
+            { frek: [[0, 430], [0.3, 380]], Q: 5, kazanc: 1 },
+            { frek: [[0, 1150], [0.3, 980]], Q: 6, kazanc: 0.5 },
+            { frek: 2100, Q: 4, kazanc: 0.18 }
+          ]
+        });
+      }
+      vrak(t0, 1);
+      vrak(t0 + 0.4, 0.94);
+      return 0.75;
+    },
+
+    // "Kişneme" — inisli perde + hizlanan titreme, sonunda nefes pufu
+    at: function (ctx, hedef, t0) {
+      var j = rastgele(0.95, 1.05), sure = 1.25;
+      otus(ctx, hedef, t0, {
+        sure: sure, tip: 'sawtooth', ses: 1.0,
+        perde: perdele([[0, 520], [0.1, 600], [0.35, 430], [0.7, 300], [1.25, 188]], j),
+        zarf:  [[0, 0], [0.05, 0.85], [0.5, 0.76], [0.95, 0.5], [1.22, 0]],
+        titreme: { hiz: [[0, 14], [0.4, 24], [1.25, 17]], derinlik: 0.46 },
+        formantlar: [
+          { frek: [[0, 700], [0.6, 600], [1.25, 480]], Q: 5, kazanc: 1 },
+          { frek: [[0, 1700], [0.6, 1400], [1.25, 1150]], Q: 6, kazanc: 0.45 },
+          { frek: 2800, Q: 3, kazanc: 0.15 }
+        ]
+      });
+      hisirti(ctx, hedef, t0 + 0.95, {
+        sure: 0.4, frek: [[0, 1500], [0.4, 600]], Q: 0.9,
+        zarf: [[0, 0], [0.08, 0.2], [0.4, 0]]
+      });
+      return sure + 0.25;
+    }
+  };
+
+  /* ==================================================================
+     2. CALMA  —  once gercek kayit, yoksa sentez
+     ------------------------------------------------------------------
+     "sesler/" klasorune inek.mp3, koyun.mp3 ... koyulursa uygulama
+     otomatik olarak onlari calar. Dosya yoksa sentez devrede kalir.
+     ================================================================== */
+
+  var ctx = null;          // AudioContext (ilk dokunusta olusur)
+  var aktifSentez = null;  // calan sentez sesinin cikis dugumu
+  var aktifKayit = null;   // calan mp3
+  var kayitlar = {};       // id -> hazir Audio elementi
+
+  function sesMotoru() {
+    if (!ctx) {
+      var AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return null;
+      ctx = new AC();
+    }
+    // iOS/Safari: ses ancak bir kullanici hareketinden sonra acilir
+    if (ctx.state === 'suspended' && ctx.resume) ctx.resume();
+    return ctx;
+  }
+
+  function durdur() {
+    if (aktifKayit) {
+      try { aktifKayit.pause(); aktifKayit.currentTime = 0; } catch (e) {}
+      aktifKayit = null;
+    }
+    if (aktifSentez && ctx) {
+      var g = aktifSentez.gain, t = ctx.currentTime;
+      try {
+        g.cancelScheduledValues(t);
+        g.setValueAtTime(g.value, t);
+        g.linearRampToValueAtTime(0.0001, t + 0.06);
+      } catch (e) {}
+      var eski = aktifSentez;
+      setTimeout(function () { try { eski.disconnect(); } catch (e) {} }, 150);
+      aktifSentez = null;
+    }
+  }
+
+  function cal(id) {
+    durdur();   // cocuk butonlara ust uste bassin diye: her zaman tek ses
+
+    if (kayitlar[id]) {
+      var a = kayitlar[id];
+      try {
+        a.currentTime = 0;
+        var s = a.play();
+        if (s && s.catch) s.catch(function () {});
+        aktifKayit = a;
+        return;
+      } catch (e) { /* kayit calmadi, sentezle devam */ }
+    }
+
+    var c = sesMotoru();
+    if (!c || !SENTEZ[id]) return;
+    var cikis = c.createGain();
+    cikis.gain.setValueAtTime(1, c.currentTime);
+    cikis.connect(c.destination);
+    var t0 = c.currentTime + 0.02;
+    var sure = SENTEZ[id](c, cikis, t0);
+    aktifSentez = cikis;
+    var benim = cikis;
+    setTimeout(function () {
+      if (aktifSentez === benim) aktifSentez = null;
+      try { benim.disconnect(); } catch (e) {}
+    }, (sure + 0.3) * 1000);
+  }
+
+  // Acilista gercek kayitlari yokla; varsa devral, yoksa sessizce sentezde kal
+  function kayitlariYokla(idler) {
+    idler.forEach(function (id) {
+      var a = new Audio('sesler/' + id + '.mp3');
+      a.preload = 'auto';
+      a.addEventListener('canplaythrough', function () { kayitlar[id] = a; }, { once: true });
+      a.addEventListener('error', function () {}, { once: true });
+    });
+  }
+
+  /* ==================================================================
+     3. DOKUNUNCA CANLANMA
+     ================================================================== */
+
+  var SIMGELER = ['⭐', '💛', '✨', '🎵', '💖'];
+
+  function canlandir(kart) {
+    kart.classList.remove('oynat');
+    void kart.offsetWidth;              // reflow — animasyon bastan baslasin
+    kart.classList.add('oynat');
+    kart.addEventListener('animationend', function bitti(e) {
+      if (e.target !== kart) return;    // simgelerin animasyonu kabarcik olarak geliyor
+      kart.classList.remove('oynat');
+      kart.removeEventListener('animationend', bitti);
+    });
+
+    var halka = document.createElement('span');
+    halka.className = 'halka';
+    kart.appendChild(halka);
+    halka.addEventListener('animationend', function () { halka.remove(); });
+
+    var adet = 3 + Math.floor(Math.random() * 2);
+    for (var i = 0; i < adet; i++) {
+      var s = document.createElement('span');
+      s.className = 'simge';
+      s.textContent = SIMGELER[Math.floor(Math.random() * SIMGELER.length)];
+      s.style.setProperty('--x', rastgele(-46, 46).toFixed(0) + 'px');
+      s.style.setProperty('--r', rastgele(-40, 40).toFixed(0) + 'deg');
+      s.style.animationDelay = (i * 0.07).toFixed(2) + 's';
+      kart.appendChild(s);
+      (function (el) {
+        el.addEventListener('animationend', function () { el.remove(); });
+      })(s);
+    }
+  }
+
+  /* ==================================================================
+     4. BAGLANTILAR
+     ================================================================== */
+
+  var kartlar = Array.prototype.slice.call(document.querySelectorAll('.kart'));
+  kayitlariYokla(kartlar.map(function (k) { return k.dataset.hayvan; }));
+
+  kartlar.forEach(function (kart) {
+    var id = kart.dataset.hayvan;
+
+    function dokun(e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) return;
+      cal(id);
+      canlandir(kart);
+    }
+
+    // pointerdown: dokunusun hemen ardindan ses cikar, gecikme hissi olmaz
+    kart.addEventListener('pointerdown', dokun);
+
+    // Klavye (Enter/Space) icin: pointer olayi gelmediyse click'ten calistir
+    kart.addEventListener('click', function (e) {
+      if (e.detail === 0) dokun(e);   // detail 0 = klavyeden tetiklendi
+    });
+  });
+
+  // Cocuk parmagini basili tutunca menu acilmasin
+  document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+
+  // Testlerin sentez fonksiyonlarina erisebilmesi icin
+  window.HAYVAN_SESLERI = SENTEZ;
+})();
+</script>
+
+</body>
+</html>
